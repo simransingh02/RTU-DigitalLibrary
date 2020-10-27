@@ -1,0 +1,172 @@
+import sys
+from collections import OrderedDict
+from matplotlib import pyplot as plt
+
+def encode(msg):
+    message = ""
+    i = 0
+    while (i <= len(msg) - 1):
+        count = 1
+        ch = msg[i]
+        j = i
+        while (j < len(msg) - 1):
+            if (msg[j] == msg[j + 1]):
+                count = count + 1
+                j = j + 1
+            else:
+                break
+        message = message + ch + str(count)
+        i = j + 1
+    return message
+
+def decode(data):
+    decode = ''
+    count = '0'
+    d=''
+    for char in data:
+        if not char.isdigit():
+            decode += ((d) * int(count))
+            count = '0'
+            d=char
+        else:
+            count+=char
+    decode += ((d) * int(count))
+    return decode
+
+def hasNumbers(inputString):
+    return any(char.isdigit() for char in inputString)
+
+inputString = input("Enter String to Encode : ")
+while(hasNumbers(inputString)):
+    inputString = input("Please Enter Valid String Not Containing Digits : ")
+
+encodedString = encode(inputString)
+print("Encoded String : ",encodedString)
+
+class InputStringInvalid(Exception):
+    def __init__(self, value):
+        self.value = "(INVALID STRING) : " + value
+    def __str__(self):
+        return(str(self.value))
+
+try:
+    inputfile = open("inputfile.txt", "r")
+except FileNotFoundError:
+    print('Input File Not Found')
+    print("Please Check Input File Name & Try Again")
+    sys.exit()
+outputfile = open("encodedfile.txt","w")
+
+lines = inputfile.readlines()
+for line in lines:
+    inputString = line.strip()
+    try :
+        if (hasNumbers(inputString)):
+            raise InputStringInvalid(inputString)
+        else:
+            encodedString = encode(inputString)
+    except InputStringInvalid as e:
+        encodedString=e.value
+    outputfile.write(encodedString + "\n")
+print("File Encoding SuccessFull")
+
+inputfile = open("encodedfile.txt","r")
+outputfile = open("decodedfile.txt","w")
+
+
+lines = inputfile.readlines()
+for line in lines:
+    inputString = line.strip()
+    if (inputString.__contains__("(INVALID STRING)")):
+        decodedString = inputString[19:]
+    else:
+        decodedString = decode(inputString)
+    outputfile.write(decodedString + "\n")
+print("File Decoding SuccessFull")
+
+print("----------------------------------------------------------------")
+print("                         INPUT FILE")
+print("----------------------------------------------------------------")
+with open('inputfile.txt') as f:
+    for line in f:
+        print(line.strip())
+print("----------------------------------------------------------------")
+
+print("\n\n\n----------------------------------------------------------------")
+print("                        ENCODED FILE")
+print("----------------------------------------------------------------")
+with open('encodedfile.txt') as f:
+    for line in f:
+        print(line.strip())
+print("----------------------------------------------------------------")
+
+print("\n\n\n----------------------------------------------------------------")
+print("                        DECODED FILE")
+print("----------------------------------------------------------------")
+with open('decodedfile.txt') as f:
+    for line in f:
+        print(line.strip())
+print("----------------------------------------------------------------")
+
+inputfile = open("inputfile.txt","r")
+count = {}
+lines = inputfile.readlines()
+invalid = 0
+for line in lines:
+    line=line.strip()
+    if (hasNumbers(line)):
+        invalid +=1
+        continue
+    for i in line:
+        if i in count:
+            count[i] += 1
+        else:
+            count[i] = 1
+print("There Was total {} Invalid Lines Those Are Ignored".format(invalid))
+data = {}
+for key in sorted(count):
+    if(key==' '):
+        continue
+    data[key]=count[key]
+
+highdata = {}
+s=sorted(data)
+for x in s:
+    highdata[x]=data[x]
+plt.figure(figsize=(16,8))
+plt.title("Histogram Of Number Of Occurrence Of Each Character in Input File in Sorted with Character")
+plt.xlabel("Characters")
+plt.ylabel("Occurrence Of Each Charcter")
+plt.bar(highdata.keys(), highdata.values(), width=0.5, color='grby')
+plt.show()
+
+highdata = OrderedDict(sorted(data.items(), key=lambda t: t[1]))
+plt.figure(figsize=(16,8))
+plt.title("Histogram Of Number Of Occurrence Of Each Character in Input File in Sorted with Occurrences")
+plt.xlabel("Characters")
+plt.ylabel("Occurrence Of Each Charcter")
+plt.bar(highdata.keys(), highdata.values(), width=0.5, color='grby')
+plt.show()
+
+highdata = {}
+s=sorted(data, key=data.get, reverse=True)[:5]
+for x in s:
+    highdata[x]=data[x]
+plt.figure(figsize=(16,8))
+plt.title("Histogram Of Most 5 Appearing Characters in Input File")
+plt.xlabel("Characters")
+plt.ylabel("Occurrence Of Each Charcter")
+plt.bar(highdata.keys(), highdata.values(), width=0.5, color='grby')
+plt.show()
+
+highdata={}
+s=sorted(data, key=data.get, reverse=False)[:5]
+for x in s:
+    highdata[x]=data[x]
+plt.figure(figsize=(16,8))
+plt.title("Histogram Of Least 5 Appearing Characters in Input File")
+plt.xlabel("Characters")
+plt.ylabel("Occurrence Of Each Charcter")
+plt.bar(highdata.keys(), highdata.values(), width=0.5, color='grby')
+plt.show()
+
