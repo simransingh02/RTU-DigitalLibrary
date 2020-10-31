@@ -6,7 +6,7 @@ cd RTU-DigitalLibrary
 ```
 2. Make a branch 
 ```
-git checkout -b (branch-name)
+poojamankar/RTU-DigitalLibrary 
 ```
 3. Add your content in a folder<br>
 i. Add content in their respective folder<br>
